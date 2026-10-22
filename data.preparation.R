@@ -349,6 +349,12 @@ uvira %>%
 # save Uvira case file to disk
 saveRDS(uvira, file="uvira.cases.2016.2020.rds")
 
+# save a random jitter version that is stripped down for tau analysis
+uvira$x_j <- jitter(uvira$X, factor=500)
+uvira$y_j <- jitter(uvira$Y, factor=500)
+uvira_jitter <- uvira %>% select(id, year, agecat, sex, outcome, tested, result, x_j, y_j)
+saveRDS(uvira, file="jitter.cases.2016.2020.rds")      
+
 # Create a version that has only the data needs for the 3 SATSCAN
 # files
 
@@ -395,6 +401,7 @@ sum(uvira.ss$cases)
 
 # import pop file with 2017 census estimates (from Aurelie's thesis)
 uvira.ave.pop.2017 <- read.csv('C:\\R-projects\\Uvira-spatial-epid\\uvpop.csv')
+
 uvira.ave.pop.2017 <- uvira.ave.pop.2017 %>% 
   dplyr::select(ave, pop2, date2) %>% 
   rename(pop=pop2, date=date2)
@@ -409,7 +416,7 @@ sum(uvira.ave.pop.2017$pop)  # 254 437
 uvira.ss <- uvira.ss[!(uvira.ss$ave=="av.village_kabindula"),]
 
 # creates distance matrix between avenue centroids (in metres) to check min/max/mean 
-pixdistmat <- distm(cbind(uvira.ave.shape.2.cent$X, 
+pixdistmat <- geosphere::distm(cbind(uvira.ave.shape.2.cent$X, 
                           uvira.ave.shape.2.cent$Y))
 colnames(pixdistmat) <- seq_along(1:216)
 
